@@ -1,6 +1,13 @@
-pandas
-numpy
-scikit-learn
-joblib
-kaggle
-opendatasets
+# --- Core Data Processing ---
+pandas>=2.0.0
+numpy>=1.23.5
+
+# --- Machine Learning & Persistence ---
+scikit-learn>=1.2.0
+joblib>=1.2.0
+
+# --- Environment & Security ---
+python-dotenv>=1.0.0
+
+# --- Data Acquisition ---
+kaggle>=1.5.12

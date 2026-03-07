@@ -1,0 +1,33 @@
+# === Security & Environment ===
+.env
+.venv/
+env/
+venv/
+ENV/
+kaggle.json
+
+# === Data & Heavy Files ===
+# Tuyệt đối không đẩy dữ liệu thô lên để tránh nặng Repo
+data/
+*.zip
+*.csv
+*.xlsx
+
+# === Python Trash ===
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# === IDE & OS Trash ===
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# === Project Specific ===
+# Giữ lại folder features nhưng bỏ qua các file log tạm (nếu có)
+features/*.log
+
+
+features/*.joblib
