@@ -1,6 +1,6 @@
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
-from models.simple_classifier import SimpleClassifierModel
+from models.simple_classifier import SimpleClassifier
 
 class DiseaseClassifier:
     
@@ -16,7 +16,8 @@ class DiseaseClassifier:
     @classmethod
     def create_classifier_model(cls, name: str, trained_model_location: str = None):
         """
-        Trả về ML model theo tên
+        Chọn ML model theo tên.
+        Các ML model này nên có cùng interface một số method cơ bản như fit(), predict()
         """
         if name == "sklearnDecisionTreeClassifier":
             return DecisionTreeClassifier(random_state=42)
@@ -35,6 +36,7 @@ class DiseaseClassifier:
         Train model.
         Input: đường dẫn tới file dataset (csv)
         Có thể cố định format file input theo một chuẩn nào đó, huyến khích human-readable (header row và column chưa mã hoá thành số)
+        Sau đó mới encode về số => gọi hàm fit() của model
         """
         # TO DO
     
@@ -44,6 +46,7 @@ class DiseaseClassifier:
         Dự đoán bệnh.
         Input: list[str] -> list triệu chứng (phải có nằm trong file csv dùng để train)
         Output: str -> tên bệnh (phải có nằm trong file csv dùng để train)
+        Gọi predict() của model
         """
         # TO DO
 
