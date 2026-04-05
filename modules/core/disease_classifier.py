@@ -1,6 +1,4 @@
-from sklearn.tree import DecisionTreeClassifier
 import numpy as np
-from models.simple_classifier import SimpleClassifier
 
 class DiseaseClassifier:
     
@@ -9,9 +7,13 @@ class DiseaseClassifier:
         """
         Khởi tạo ML model theo tên
         Có thể định nghĩa thêm attribute tuỳ ý
+
+        :param model_name: Chọn model classifier
+        :type model_name: str
+        :param trained_model_location: đường dẫn đến file lưu model (nếu chọn trained model)
+        :type trained_model_location: str
         """
-        # TO DO
-        self.model = None
+        self.model = DiseaseClassifier.create_classifier_model(model_name, trained_model_location)
 
     @classmethod
     def create_classifier_model(cls, name: str, trained_model_location: str = None):
@@ -20,33 +22,45 @@ class DiseaseClassifier:
         Các ML model này nên có cùng interface một số method cơ bản như fit(), predict()
         """
         if name == "sklearnDecisionTreeClassifier":
-            return DecisionTreeClassifier(random_state=42)
+            try:
+                from sklearn.tree import DecisionTreeClassifier
+                return DecisionTreeClassifier(random_state=42)
+            except:
+                raise ImportError("DiseaseClassifier.create_classifier_model(): Trouble importing sklearn")
         elif name == "trainedModel":
             """Load from .joblib files"""
             # TO DO
             return None
         elif name == "simpleClassifierModel":
-            # TO DO
+            try:
+                from models.simple_classifier import SimpleClassifier
+                return SimpleClassifier()
+            except:
+                raise ImportError("DiseaseClassifier.create_classifier_model(): Trouble importing models.simple_classifier")
             return None
         raise ValueError(f"DiseaseClassifier.create_classifier_model(): Unknown model name: {name}")
     
     # ---------- Core methods ----------
     def train(self, dataset_path: str):
         """
-        Train model.
-        Input: đường dẫn tới file dataset (csv)
-        Có thể cố định format file input theo một chuẩn nào đó, huyến khích human-readable (header row và column chưa mã hoá thành số)
-        Sau đó mới encode về số => gọi hàm fit() của model
+        Encode header row và column => gọi hàm fit() của model.
+        
+        :param dataset_path: đường dẫn tới file dataset (csv).
+        File này được format như dataset mình đang sử dụng.
+        Nếu sử dụng dataset khác thì phải đưa về cùng format trước khi gọi hàm này.
+        :type dataset_path: str
         """
         # TO DO
     
 
     def predict(self, X: list[str]) -> str:
         """
-        Dự đoán bệnh.
-        Input: list[str] -> list triệu chứng (phải có nằm trong file csv dùng để train)
-        Output: str -> tên bệnh (phải có nằm trong file csv dùng để train)
-        Gọi predict() của model
+        Dự đoán bệnh. Gọi predict() của model
+        
+        :param X: list triệu chứng (có nằm trong file csv dùng để train)
+        :type X: list[str]
+        :return: tên bệnh (phải có nằm trong file csv dùng để train)
+        :rtype: str
         """
         # TO DO
 
