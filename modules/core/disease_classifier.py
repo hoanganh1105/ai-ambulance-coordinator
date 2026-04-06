@@ -43,11 +43,12 @@ class DiseaseClassifier:
     # ---------- Core methods ----------
     def train(self, dataset_path: str):
         """
+        Học từ dataset.
+        File này được format như dataset mình đang sử dụng.
+        Nếu sử dụng dataset khác thì phải đưa về cùng format trước khi gọi hàm này.
         Encode header row và column => gọi hàm fit() của model.
         
         :param dataset_path: đường dẫn tới file dataset (csv).
-        File này được format như dataset mình đang sử dụng.
-        Nếu sử dụng dataset khác thì phải đưa về cùng format trước khi gọi hàm này.
         :type dataset_path: str
         """
         # TO DO

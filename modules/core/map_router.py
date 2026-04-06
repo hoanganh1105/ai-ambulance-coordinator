@@ -73,9 +73,17 @@ class MapRouter:
         """
         # TO DO
 
-    def show_map(self, route: list[tuple[float]] = None):
+    def show_map(self, org: tuple[float] = None, dests: list[tuple[float]] = None, route: list[tuple[float]] = None):
         """
-        Hiển thị bản đồ. Nếu route != None thì hightlight route trên bản đồ.
+        Hiển thị bản đồ.
+        Nếu org != None thì hightlight org trên bản đồ.
+        Nếu dests != None thì highlight các điểm thuộc dests trên bản đồ.
+        Nếu route != None thì hightlight route trên bản đồ.
+        
+        :param org: Toạ độ hiện tại của xe cứu thương
+        :type org: tuple[float]
+        :param dests: Toạ độ của các bệnh nhân
+        :type dests: list[tuple[float]]
         :param route: route theo toạ độ
         :type route: list[tuple[float]]
         """

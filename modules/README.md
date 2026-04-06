@@ -55,11 +55,7 @@ class MapRouter:
 |
 |__ ...
 ```
-### 3) Phân chia:
-- Hoàng Anh hiện thực `disease_classifier.py` và `simple_classifier.py`
-- Phương hiện thực `map_router`, `simple_street_graph.py` và `simple_search_algorithm.py`
-- Khánh hiện thực `traffic_estimator.py` và `simple_bayesian_network.py`
-### 4) Hợp đồng và một số gợi ý:
+### 3) Hợp đồng và một số gợi ý:
 - ⚠️ ***HỢP ĐỒNG*** là các file thuộc `modules/core/` - skeleton mà mọi người cần tuân thủ và hiện thực, vì đây cũng chính là những gì mà mình sẽ sử dụng trực tiếp khi viết pipeline.
 - `modules/models/` là nơi chứa các model tự hiện thực, ở các file mà mình đã tạo sẵn.
     
@@ -71,7 +67,8 @@ class MapRouter:
     Ví dụ khi tự định nghĩa một classifier model:
     ```python
     class SimpleClassifier:
-        def train():    # ❌ Nên đặt tên là fit()
+        def train():
+        # ❌ Nên đặt tên là fit()
             ...
     ```
 
@@ -81,7 +78,13 @@ class MapRouter:
     ```python
     class DiseaseClassifier:
         def train(self, dataset_path: str):
-            self.model.fit()    # Gọi fit() Không cần quan tâm self.model là instace của class nào
+            self.model.fit()
+            # ✅ Gọi fit() Không cần quan tâm self.model là instace của class nào
             ...
     ```
     ✅ Mình có thể hiện thực như trên mà không cần quan tâm `self.model` là `SimpleClassifier` hay `sklearn.tree.DecisionTreeClassifier`
+
+### 4) Phân chia:
+- Hoàng Anh hiện thực `disease_classifier.py` và `simple_classifier.py`
+- Phương hiện thực `map_router`, `simple_street_graph.py` và `simple_search_algorithm.py`
+- Khánh hiện thực `traffic_estimator.py` và `simple_bayesian_network.py`

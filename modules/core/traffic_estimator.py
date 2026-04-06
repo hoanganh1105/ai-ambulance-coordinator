@@ -70,7 +70,7 @@ class TrafficEstimator:
         :type day_of_week: str
         :param weather_condition: "Clear" / "Rain" / "Fog" / "Heatwave"
         :type weather_condition: str
-        :param road_type: loại đường
+        :param road_type: "highway" / "main road" / "inner road"
         :type road_type: str
         :return: expected level value thuộc [0, 3] (do có 4 level)
         :rtype: float
