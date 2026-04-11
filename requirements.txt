@@ -11,3 +11,9 @@ python-dotenv>=1.0.0
 
 # --- Data Acquisition ---
 kaggle>=1.5.12
+
+# --- Geospatial Analysis ---
+osmnx>=1.2.0
+geopy>=2.3.0
+matplotlib>=3.7.0
+networkx>=3.0.0

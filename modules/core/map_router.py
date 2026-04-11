@@ -9,6 +9,7 @@ class MapRouter:
         :param model_name: Tên model ('simpleStreetMap' hoặc 'osmnxStreetMap')
         :type model_name: str
         """
+        self.model_name = model_name
         self.place = place_name
         self.model = self.create_map_model(place_name, model_name)
         self.searcher = self.create_searcher(model_name)
@@ -18,7 +19,7 @@ class MapRouter:
     def create_map_model(cls, place_name: str, model_name: str):
         if model_name == "simpleStreetMap":
             try:
-                from models.simple_street_graph import graph_from_place
+                from modules.models.simple_street_graph import graph_from_place
                 return graph_from_place(place_name, "drive")
             except ImportError:
                 raise ImportError("MapRouter.create_map_model(): Trouble importing models.simple_street_map")
@@ -34,7 +35,7 @@ class MapRouter:
     def create_searcher(cls, model_name: str):
         if model_name == "simpleStreetMap":
             try:
-                from models.simple_search_algorithm import simple_astar
+                from modules.models.simple_search_algorithm import simple_astar
                 return simple_astar
             except ImportError:
                 raise ImportError("MapRouter.create_map_model(): Trouble importing models.simple_search_algorithm")
@@ -50,7 +51,7 @@ class MapRouter:
     def create_plotter(cls, model_name: str):
         if model_name == "simpleStreetMap":
             try:
-                from models.simple_street_graph import plot_graph_route
+                from modules.models.simple_street_graph import plot_graph_route
                 return plot_graph_route
             except ImportError:
                 raise ImportError("MapRouter.get_plotter(): Trouble importing models.simple_street_graph")
@@ -72,7 +73,29 @@ class MapRouter:
         :rtype: list[tuple[float]]
         """
         # TO DO
+        u = self.nearest_node(origin)
+        v = self.nearest_node(target)
+        
+        print(f"Nearest nodes: source={u}, target={v}")
+        
+        if hasattr(self.model, '_node'):
+            def h(node_id, target_id):
+                node_coord = self.model._node[node_id]
+                target_coord = self.model._node[target_id]
+                return euclidean_distance(
+                    (node_coord['y'], node_coord['x']), 
+                    (target_coord['y'], target_coord['x'])
+                )
+            
+            node_route = self.searcher(self.model, u, v, heuristic=h, weight='length')
+        else:
+            node_route = self.searcher(self.model, u, v, weight='length')
+            
+        if not node_route: 
+            return []
 
+        return [(self.model._node[node]['y'], self.model._node[node]['x']) for node in node_route]
+    
     def show_map(self, org: tuple[float] = None, dests: list[tuple[float]] = None, route: list[tuple[float]] = None):
         """
         Hiển thị bản đồ.
@@ -88,6 +111,35 @@ class MapRouter:
         :type route: list[tuple[float]]
         """
         # TO DO
+        import matplotlib.pyplot as plt
+        if self.model_name == "simpleStreetMap":
+            self.plotter(self.model, route=None) 
+            ax = plt.gca()
+
+            if route and len(route) > 1:
+                lons = [pt[1] for pt in route]
+                lats = [pt[0] for pt in route]
+                ax.plot(lons, lats, color='red', linewidth=4, alpha=1, zorder=3, label='Path')
+
+            if org:
+                ax.scatter(org[1], org[0], c='#00FF00', s=200, edgecolors='white', zorder=5)
+
+            if dests:
+                for d in dests:
+                    ax.scatter(d[1], d[0], c='#FF0000', s=150, marker='X', edgecolors='white', zorder=5)
+
+            handles, labels = ax.get_legend_handles_labels()
+            unique = [(h, l) for i, (h, l) in enumerate(zip(handles, labels)) if l not in labels[:i]]
+            ax.legend(*zip(*unique), loc='upper right')
+            
+            plt.show()
+        else:
+            node_route = None
+            if route and len(route) > 1:
+                node_route = [self.nearest_node(pt) for pt in route]
+            self.plotter(self.model, route=node_route, node_size=15)
+            plt.show()
+        
     
     def available_coordinates(self) -> list[tuple[float]]:
         """
@@ -95,6 +147,9 @@ class MapRouter:
         :rtype: list[tuple[float]]
         """
         # TO DO
+        coords = [(node['y'], node['x']) for node in self.model._node.values()]
+        return coords
+
 
     def nearest_node(self, point: tuple[float]) -> tuple[float]:
         """
@@ -105,7 +160,19 @@ class MapRouter:
         :rtype: tuple[float]
         """
         # TO DO
+        import osmnx as ox
+        if not hasattr(self.model, '_node'):
+            return ox.distance.nearest_node(self.model, X=point[1], Y=point[0])
 
+        best_node = None
+        min_dist = float('inf')
+        for node_id, data in self.model._node.items():
+            dist = ((data['x'] - point[1])**2 + (data['y'] - point[0])**2)**0.5
+            if dist < min_dist:
+                min_dist = dist
+                best_node = node_id
+        return best_node
+    
     def add_edges_attribute(self, attr: str, func):
         """
         Lặp qua các cạnh và thêm attr cho từng cạnh.
@@ -118,6 +185,8 @@ class MapRouter:
         :type func: Callable[[dict], Any]
         """
         # TO DO
+        for u, v, key, data in self.model.edges(keys=True, data=True):
+            self.model._adj[u][v][key][attr] = func(data)
 
 
 def euclidean_distance(p1: tuple[float], p2: tuple[float]) -> float:
@@ -130,4 +199,7 @@ def euclidean_distance(p1: tuple[float], p2: tuple[float]) -> float:
     :rtype: float
     """
     # TO DO
+    from geopy.distance import geodesic
+    return geodesic(p1, p2).meters
+
     
