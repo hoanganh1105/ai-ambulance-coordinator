@@ -14,7 +14,8 @@ class MapRouter:
         self.model = self.create_map_model(place_name, model_name)
         self.searcher = self.create_searcher(model_name)
         self.plotter = self.create_plotter(model_name)
-
+        self.add_edges_attribute("weight", lambda data: data.get("length"))
+        
     @classmethod
     def create_map_model(cls, place_name: str, model_name: str):
         if model_name == "simpleStreetMap":
@@ -63,14 +64,14 @@ class MapRouter:
                 raise ImportError("MapRouter.get_plotter(): Trouble importing osmnx")
         raise ValueError(f"MapRouter.get_plotter(): Unknown model name: {model_name}")
     
-    def optimal_path(self, origin: tuple[float], target: tuple[float]) -> list[tuple[float]]:
+    def optimal_path(self, origin: tuple[float, float], target: tuple[float, float]) -> list[tuple[float, float]]:
         """
         :param origin: Toạ độ điểm xuất phát
-        :type origin: tuple[float]
+        :type origin: tuple[float, float]
         :param target: Toạ độ điểm kết thúc
-        :type target: tuple[float]
+        :type target: tuple[float, float]
         :return: optimal path theo toạ độ
-        :rtype: list[tuple[float]]
+        :rtype: list[tuple[float, float]]
         """
         # TO DO
         u = self.nearest_node(origin)
@@ -87,16 +88,16 @@ class MapRouter:
                     (target_coord['y'], target_coord['x'])
                 )
             
-            node_route = self.searcher(self.model, u, v, heuristic=h, weight='length')
+            node_route = self.searcher(self.model, u, v, heuristic=h, weight='weight')
         else:
-            node_route = self.searcher(self.model, u, v, weight='length')
+            node_route = self.searcher(self.model, u, v, weight='weight')
             
         if not node_route: 
             return []
 
         return [(self.model._node[node]['y'], self.model._node[node]['x']) for node in node_route]
     
-    def show_map(self, org: tuple[float] = None, dests: list[tuple[float]] = None, route: list[tuple[float]] = None):
+    def show_map(self, org: tuple[float, float] = None, dests: list[tuple[float, float]] = None, route: list[tuple[float, float]] = None):
         """
         Hiển thị bản đồ.
         Nếu org != None thì hightlight org trên bản đồ.
@@ -104,11 +105,11 @@ class MapRouter:
         Nếu route != None thì hightlight route trên bản đồ.
         
         :param org: Toạ độ hiện tại của xe cứu thương
-        :type org: tuple[float]
+        :type org: tuple[float, float]
         :param dests: Toạ độ của các bệnh nhân
-        :type dests: list[tuple[float]]
+        :type dests: list[tuple[float, float]]
         :param route: route theo toạ độ
-        :type route: list[tuple[float]]
+        :type route: list[tuple[float, float]]
         """
         # TO DO
         import matplotlib.pyplot as plt
@@ -141,23 +142,23 @@ class MapRouter:
             plt.show()
         
     
-    def available_coordinates(self) -> list[tuple[float]]:
+    def available_coordinates(self) -> list[tuple[float, float]]:
         """
         :return: Trả về tất cả toạ độ các node có trên map
-        :rtype: list[tuple[float]]
+        :rtype: list[tuple[float, float]]
         """
         # TO DO
         coords = [(node['y'], node['x']) for node in self.model._node.values()]
         return coords
 
 
-    def nearest_node(self, point: tuple[float]) -> tuple[float]:
+    def nearest_node(self, point: tuple[float, float]) -> tuple[float, float]:
         """
         Trả về toạ độ điểm gần nhất theo khoảng cách chim bay
         :param point: toạ độ
-        :type point: tuple[float]
+        :type point: tuple[float, float]
         :return: toạ độ node gần nhất trong map
-        :rtype: tuple[float]
+        :rtype: tuple[float, float]
         """
         # TO DO
         import osmnx as ox
@@ -189,12 +190,12 @@ class MapRouter:
             self.model._adj[u][v][key][attr] = func(data)
 
 
-def euclidean_distance(p1: tuple[float], p2: tuple[float]) -> float:
+def euclidean_distance(p1: tuple[float, float], p2: tuple[float, float]) -> float:
     """
     :param p1: Điểm thứ nhất
-    :type p1: tuple[float]
+    :type p1: tuple[float, float]
     :param p2: Điểm thứ hai
-    :type p2: tuple[float]
+    :type p2: tuple[float, float]
     :return: khoảng cách euclid
     :rtype: float
     """
