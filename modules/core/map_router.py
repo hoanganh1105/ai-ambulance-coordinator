@@ -15,7 +15,15 @@ class MapRouter:
         self.searcher = self.create_searcher(model_name)
         self.plotter = self.create_plotter(model_name)
         self.add_edges_attribute("weight", lambda data: data.get("length"))
-        
+        def fix_highway_type(data):
+            road_type = data.get("highway")
+            if isinstance(road_type, list):
+                return road_type[0]
+            if not isinstance(road_type, str):
+                return "unclassified"
+            return road_type
+        self.add_edges_attribute("highway", fix_highway_type)
+
     @classmethod
     def create_map_model(cls, place_name: str, model_name: str):
         if model_name == "simpleStreetMap":
