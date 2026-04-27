@@ -47,7 +47,7 @@ class PatientPrioritizer:
         self.higher_disease_severity = self.model("higher_disease_severity")    # higher_disease_severity(D1, D2) => bệnh D1 nặng hơn bệnh D2
 
         self.higher_priority = self.model("higher_priority")    # higher_priority(P1, P2) => bệnh nhân P1 được ưu tiên hơn P2
-        self.highest_prority = self.model("highest_prority")    # highest_prority(P) => bệnh nhân P được ưu tiên cao nhất
+        self.highest_priority = self.model("highest_priority")    # highest_prority(P) => bệnh nhân P được ưu tiên cao nhất
         
 
     @staticmethod
@@ -76,7 +76,7 @@ class PatientPrioritizer:
             "highest_symptom_severity": self.highest_symptom_severity,
             "higher_disease_severity": self.higher_disease_severity,
             "higher_priority": self.higher_priority,
-            "highest_prority": self.highest_prority
+            "highest_prority": self.highest_priority
         }
 
         with open(knowledge_base, 'r', encoding='utf-8') as f:
@@ -95,12 +95,13 @@ class PatientPrioritizer:
             
             + self.disease(p, p.predicted_disease)
             
-        self.highest_prority(self.P)
+        self.highest_priority(self.P)
         ans = self.P.data.copy()
 
         for p in patients:
             - self.patient(p)
-            - self.symptom(p, p.symptoms[0])
+            for s in p.symptoms:          
+                - self.symptom(p, s)
             - self.disease(p, p.predicted_disease)
 
         return ans
