@@ -1,7 +1,7 @@
 class Patient:
     next_id = 0
 
-    def __init__(self, id: int, symptoms: list[str], position: tuple[float, float]):
+    def __init__(self, symptoms: list[str], position: tuple[float, float]):
         self.id = Patient.next_id
         self.symptoms = symptoms
         self.predicted_disease = None
@@ -10,7 +10,7 @@ class Patient:
 
 
 class PatientPrioritizer:
-    def __init__(self, model_name: str):
+    def __init__(self, model_name: str = "pyDatalog"):
         self.model = PatientPrioritizer.create_prioritizer_model(model_name)
 
         # Biến cho bệnh nhân

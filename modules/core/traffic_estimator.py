@@ -17,6 +17,7 @@ ROAD_TYPE_FALLBACK_FROM_OSMNX = {
     'secondary_link': 'main road',
     'tertiary': 'main road',
     'tertiary_link': 'main road',
+    'busway': 'main road',
 
     # Nhóm 3: Inner road (Đường dân cư, đường nhỏ)
     'residential': 'inner road',
