@@ -1,5 +1,5 @@
 class Patient:
-    next_id = 0
+    next_id = 1
 
     def __init__(self, symptoms: list[str], position: tuple[float, float]):
         self.id = Patient.next_id

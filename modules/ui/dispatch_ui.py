@@ -3,6 +3,7 @@ from ipyleaflet import Map, Marker, GeoData, Icon
 import ipywidgets as widgets
 from IPython.display import display, clear_output
 from shapely.geometry import Point
+from modules.core.patient_prioritizer import Patient
 
 def create_dispatch_interface(place_name: str, symptoms_vocab: list[str], callback):
     # ==========================================
@@ -124,11 +125,10 @@ def create_dispatch_interface(place_name: str, symptoms_vocab: list[str], callba
                 return
                 
             # Tạo object Patient (gọi class bạn đã định nghĩa ở ngoài)
-            patient_id = len(patients_list) + 1
-            new_patient = Patient(id=patient_id, symptoms=current_patient_symptoms.copy(), position=current_selected_pos)
+            new_patient = Patient(symptoms=current_patient_symptoms.copy(), position=current_selected_pos)
             patients_list.append(new_patient)
             
-            log_message(f"🤒 BN #{patient_id} tại {current_selected_pos} | TC: {current_patient_symptoms}")
+            log_message(f"🤒 BN #{new_patient.id} tại {current_selected_pos} | TC: {current_patient_symptoms}")
             
             # Đánh dấu lên bản đồ
             red_icon = Icon(icon_url='https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png', icon_size=[25, 41], icon_anchor=[12, 41])
