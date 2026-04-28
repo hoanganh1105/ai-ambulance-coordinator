@@ -1192,7 +1192,9 @@ higher_tier(T1, T3) <= higher_tier(T1, T2) & higher_tier(T2, T3)
 
 higher_symptom_severity(S1, S2) <= symptom_tier(S1, T1) & symptom_tier(S2, T2) & higher_tier(T1, T2)
 same_symptom_severity(S1, S2) <= symptom_tier(S1, T1) & symptom_tier(S2, T2) & same_tier(T1, T2)
-highest_symptom_severity(P, S) <= symptom(P, S) & symptom(P, S0) & ~higher_symptom_severity(S0, S)
+
+exist_higher_symptom_severity(P, S) <= symptom(P, S) & symptom(P, S0) & higher_symptom_severity(S0, S)
+highest_symptom_severity(P, S) <= symptom(P, S) & ~exist_higher_symptom_severity(P, S)
 
 
 # COMPARING DISEASE
@@ -1208,4 +1210,5 @@ higher_priority(P1, P2) <= highest_symptom_severity(P1, S1) & highest_symptom_se
 
 # TOP PRIORITY LOGIC
 
-highest_prority(P) <= patient(P) & ~higher_priority(P0, P)
+exist_higher_priority(P) <= patient(P) & patient(P0) & higher_priority(P0, P)
+highest_prority(P) <= patient(P) & ~exist_higher_priority(P)

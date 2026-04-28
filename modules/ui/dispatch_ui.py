@@ -132,7 +132,7 @@ def create_dispatch_interface(place_name: str, symptoms_vocab: list[str], callba
             
             # Đánh dấu lên bản đồ
             red_icon = Icon(icon_url='https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png', icon_size=[25, 41], icon_anchor=[12, 41])
-            m.add_layer(Marker(location=current_selected_pos, icon=red_icon, title=f"Patient {patient_id}"))
+            m.add_layer(Marker(location=current_selected_pos, icon=red_icon, title=f"Patient {new_patient.id}"))
             
             # Reset form cho bệnh nhân tiếp theo
             current_patient_symptoms.clear()

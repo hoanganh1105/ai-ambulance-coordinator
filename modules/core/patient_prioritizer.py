@@ -41,12 +41,14 @@ class PatientPrioritizer:
         self.symptom_tier = self.model("symptom_tier")                          # symptom_tier(S, T) => Tier của triệu chứng S là T
         self.higher_symptom_severity = self.model("higher_symptom_severity")    # higher_symptom_severity(S1, S2) => triệu chứng S1 nặng hơn S2
         self.same_symptom_severity = self.model("same_symptom_severity")        # same_symptom_severity(S1, S2) => triệu chứng S1 nặng bằng S2
+        self.exist_higher_symptom_severity = self.model("exist_higher_symptom_severity")
         self.highest_symptom_severity = self.model("highest_symptom_severity")  # highest_symptom_severity(P, S) => bệnh nhân P có triệu chứng S nặng nhất
 
         self.disease_tier = self.model("disease_tier")                          # disease_tier(D, T) => tier của bệnh D là T
         self.higher_disease_severity = self.model("higher_disease_severity")    # higher_disease_severity(D1, D2) => bệnh D1 nặng hơn bệnh D2
 
         self.higher_priority = self.model("higher_priority")    # higher_priority(P1, P2) => bệnh nhân P1 được ưu tiên hơn P2
+        self.exist_higher_priority = self.model("exist_higher_priority")
         self.highest_prority = self.model("highest_prority")    # highest_prority(P) => bệnh nhân P được ưu tiên cao nhất
         
 
@@ -73,9 +75,11 @@ class PatientPrioritizer:
             "higher_tier": self.higher_tier, "same_tier": self.same_tier,
             "higher_symptom_severity": self.higher_symptom_severity,
             "same_symptom_severity": self.same_symptom_severity,
+            "exist_higher_symptom_severity": self.exist_higher_symptom_severity,
             "highest_symptom_severity": self.highest_symptom_severity,
             "higher_disease_severity": self.higher_disease_severity,
             "higher_priority": self.higher_priority,
+            "exist_higher_priority": self.exist_higher_priority,
             "highest_prority": self.highest_prority
         }
 
