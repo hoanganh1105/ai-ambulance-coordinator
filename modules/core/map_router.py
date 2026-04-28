@@ -72,7 +72,7 @@ class MapRouter:
                 raise ImportError("MapRouter.get_plotter(): Trouble importing osmnx")
         raise ValueError(f"MapRouter.get_plotter(): Unknown model name: {model_name}")
     
-    def optimal_path(self, origin: tuple[float, float], target: tuple[float, float]) -> list[tuple[float, float]]:
+    def optimal_path(self, origin: tuple[float, float], target: tuple[float, float]) -> tuple[list[tuple[float, float]], int]:
         """
         :param origin: Toạ độ điểm xuất phát
         :type origin: tuple[float, float]
@@ -82,8 +82,8 @@ class MapRouter:
         :rtype: list[tuple[float, float]]
         """
         # TO DO
-        u = self.nearest_node(origin)
-        v = self.nearest_node(target)
+        u = self._nearest_node(origin)
+        v = self._nearest_node(target)
         
         print(f"Nearest nodes: source={u}, target={v}")
         
@@ -103,7 +103,7 @@ class MapRouter:
         if not node_route: 
             return []
 
-        return [(self.model._node[node]['y'], self.model._node[node]['x']) for node in node_route]
+        return [(self.model._node[node]['y'], self.model._node[node]['x']) for node in node_route], self._shortest_length_of(node_route)
     
     def show_map(self, org: tuple[float, float] = None, dests: list[tuple[float, float]] = None, route: list[tuple[float, float]] = None):
         """
@@ -145,7 +145,7 @@ class MapRouter:
         else:
             node_route = None
             if route and len(route) > 1:
-                node_route = [self.nearest_node(pt) for pt in route]
+                node_route = [self._nearest_node(pt) for pt in route]
             self.plotter(self.model, route=node_route, node_size=15)
             plt.show()
         
@@ -160,13 +160,13 @@ class MapRouter:
         return coords
 
 
-    def nearest_node(self, point: tuple[float, float]) -> tuple[float, float]:
+    def _nearest_node(self, point: tuple[float, float]) -> int:
         """
         Trả về toạ độ điểm gần nhất theo khoảng cách chim bay
         :param point: toạ độ
         :type point: tuple[float, float]
-        :return: toạ độ node gần nhất trong map
-        :rtype: tuple[float, float]
+        :return: id node gần nhất trong map
+        :rtype: int
         """
         # TO DO
         import osmnx as ox
@@ -182,6 +182,18 @@ class MapRouter:
                 best_node = node_id
         return best_node
     
+    def _shortest_length_of(self, route: list[int]):
+        total_sum = 0
+        for i in range(len(route) - 1):
+            u, v = route[i], route[i+1]
+            
+            edges = self.model._adj[u][v]
+            shortest = min(attr["length"] for attr in edges.values())
+            
+            total_sum += shortest
+
+        return total_sum
+
     def add_edges_attribute(self, attr: str, func):
         """
         Lặp qua các cạnh và thêm attr cho từng cạnh.

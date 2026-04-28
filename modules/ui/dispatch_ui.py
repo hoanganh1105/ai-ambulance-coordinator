@@ -4,7 +4,7 @@ import ipywidgets as widgets
 from IPython.display import display, clear_output
 from shapely.geometry import Point
 
-def create_dispatch_interface(place_name: str, symptoms_vocab: list[str]):
+def create_dispatch_interface(place_name: str, symptoms_vocab: list[str], callback):
     # ==========================================
     # 1. KHỞI TẠO DỮ LIỆU
     # ==========================================
@@ -156,6 +156,8 @@ def create_dispatch_interface(place_name: str, symptoms_vocab: list[str]):
         symptom_input.disabled = True
         btn_add_symptom.disabled = True
 
+        callback(ambulance_pos, patients_list)
+
     # Liên kết sự kiện
     m.on_interaction(handle_map_click)
     btn_add_symptom.on_click(handle_add_symptom)
@@ -177,4 +179,4 @@ def create_dispatch_interface(place_name: str, symptoms_vocab: list[str]):
     
     display(widgets.VBox([m, control_panel]))
     
-    return ambulance_pos, patients_list
+    # return ambulance_pos, patients_list
