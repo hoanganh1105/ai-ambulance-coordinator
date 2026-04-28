@@ -32,12 +32,12 @@ class MapRouter:
                 return graph_from_place(place_name, "drive")
             except ImportError:
                 raise ImportError("MapRouter.create_map_model(): Trouble importing models.simple_street_map")
-        elif model_name == "osmnxStreetMap":
-            try:
-                import osmnx
-                return osmnx.graph_from_place(place_name, network_type="drive")
-            except ImportError:
-                raise ImportError("MapRouter.create_map_model(): Trouble importing osmnx")
+        # elif model_name == "osmnxStreetMap":
+        #     try:
+        #         import osmnx
+        #         return osmnx.graph_from_place(place_name, network_type="drive")
+        #     except ImportError:
+        #         raise ImportError("MapRouter.create_map_model(): Trouble importing osmnx")
         raise ValueError(f"MapRouter.create_map_model(): Unknown model name: {model_name}")
     
     @classmethod
@@ -105,48 +105,62 @@ class MapRouter:
 
         return [(self.model._node[node]['y'], self.model._node[node]['x']) for node in node_route], self._shortest_length_of(node_route)
     
-    def show_map(self, org: tuple[float, float] = None, dests: list[tuple[float, float]] = None, route: list[tuple[float, float]] = None):
-        """
-        Hiển thị bản đồ.
-        Nếu org != None thì hightlight org trên bản đồ.
-        Nếu dests != None thì highlight các điểm thuộc dests trên bản đồ.
-        Nếu route != None thì hightlight route trên bản đồ.
-        
-        :param org: Toạ độ hiện tại của xe cứu thương
-        :type org: tuple[float, float]
-        :param dests: Toạ độ của các bệnh nhân
-        :type dests: list[tuple[float, float]]
-        :param route: route theo toạ độ
-        :type route: list[tuple[float, float]]
-        """
-        # TO DO
-        import matplotlib.pyplot as plt
-        if self.model_name == "simpleStreetMap":
-            self.plotter(self.model, route=None) 
-            ax = plt.gca()
+    def show_map(self, org: tuple[float, float] = None, dests: list[tuple[float, float]] = None, route: list[tuple[float, float]] = [], show_density: bool = False):
+            """
+            Hiển thị bản đồ.
+            Dùng self.plotter để vẽ nền, sau đó vẽ đè heatmap và các icon lên trên.
+            """
+            import matplotlib.pyplot as plt
+            import matplotlib.colors as mcolors
 
-            if route and len(route) > 1:
-                lons = [pt[1] for pt in route]
-                lats = [pt[0] for pt in route]
-                ax.plot(lons, lats, color='red', linewidth=4, alpha=1, zorder=3, label='Path')
+            # ==========================================
+            # 1. GỌI SELF.PLOTTER ĐỂ VẼ NỀN (Lớp dưới cùng)
+            # ==========================================
 
+            # Nếu route có, convert sang node id cho osmnx vẽ luôn
+            node_route = [self._nearest_node(pt) for pt in route] if route and len(route) > 1 else None
+            self.plotter(self.model, route=node_route, node_size=15, show=False, close=False)
+                
+            ax = plt.gca() # Lấy bức tranh đang vẽ dở để chuẩn bị vẽ đè
+
+            # ==========================================
+            # 2. VẼ ĐÈ MÀU MẬT ĐỘ (Nếu show_density = True)
+            # ==========================================
+            if show_density:
+                cmap = mcolors.LinearSegmentedColormap.from_list("density", ["#00FF00", "#FFFF00", "#FFA500", "#FF0000"])
+                norm = mcolors.Normalize(vmin=0.0, vmax=3.0)
+                nodes = self.model._node if hasattr(self.model, '_node') else self.model.nodes
+
+                for u, v, data in self.model.edges(data=True):
+                    x = [nodes[u]['x'], nodes[v]['x']]
+                    y = [nodes[u]['y'], nodes[v]['y']]
+                    
+                    d_level = float(data.get('density_level', 0.0))
+                    d_level = max(0.0, min(3.0, d_level))
+                    
+                    # Vẽ đè lên với zorder=2 (nền của plotter là 1), cho nét to hơn 1 tí để che nét cũ
+                    ax.plot(x, y, color=cmap(norm(d_level)), linewidth=1.5, alpha=0.8, zorder=2)
+
+            # ==========================================
+            # 3. VẼ ĐÈ LỚP OVERLAYS (Xe, Bệnh nhân, Tuyến đường)
+            # ==========================================
+            # Vẽ đè Xe cứu thương
             if org:
-                ax.scatter(org[1], org[0], c='#00FF00', s=200, edgecolors='white', zorder=5)
+                ax.scatter(org[1], org[0], c='#00FF00', s=200, edgecolors='white', zorder=5, label='Ambulance')
 
+            # Vẽ đè Bệnh nhân
             if dests:
-                for d in dests:
-                    ax.scatter(d[1], d[0], c='#FF0000', s=150, marker='X', edgecolors='white', zorder=5)
+                for i, d in enumerate(dests):
+                    lbl = 'Patient' if i == 0 else "" # Tránh lặp chữ Patient trong Legend
+                    ax.scatter(d[1], d[0], c='#FF0000', s=150, marker='X', edgecolors='white', zorder=5, label=lbl)
 
+            # Gom và dọn dẹp Legend
             handles, labels = ax.get_legend_handles_labels()
-            unique = [(h, l) for i, (h, l) in enumerate(zip(handles, labels)) if l not in labels[:i]]
-            ax.legend(*zip(*unique), loc='upper right')
-            
-            plt.show()
-        else:
-            node_route = None
-            if route and len(route) > 1:
-                node_route = [self._nearest_node(pt) for pt in route]
-            self.plotter(self.model, route=node_route, node_size=15)
+            if labels:
+                unique_legend = dict(zip(labels, handles))
+                ax.legend(unique_legend.values(), unique_legend.keys(), loc='upper right')
+
+            # Triển lãm bản đồ cuối cùng
             plt.show()
         
     

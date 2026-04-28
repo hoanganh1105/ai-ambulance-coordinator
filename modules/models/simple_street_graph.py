@@ -137,7 +137,7 @@ def graph_from_place(place_name: str, network_type: str='drive') -> SimpleStreet
 
     return simple_graph
 
-def plot_graph_route(G: SimpleStreetGraph, route: list[int] = None, route_color: str = 'r', route_linewidth: float = 4, node_size: float = 15):
+def plot_graph_route(G: SimpleStreetGraph, route: list[int] = None, route_color: str = 'r', route_linewidth: float = 4, node_size: float = 15, **kwargs):
     """
     Hiển thị bản đồ, background màu #111111, cạnh màu #999999
     :param G: Đồ thị đường đi

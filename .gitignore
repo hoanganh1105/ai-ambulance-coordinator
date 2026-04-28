@@ -29,5 +29,5 @@ Thumbs.db
 # Giữ lại folder features nhưng bỏ qua các file log tạm (nếu có)
 features/*.log
 
-
+cache
 features/*.joblib
