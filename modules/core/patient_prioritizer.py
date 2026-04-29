@@ -96,7 +96,6 @@ class PatientPrioritizer:
             + self.patient(p)
             for s in p.symptoms:
                 + self.symptom(p, s)
-            
             + self.disease(p, p.predicted_disease)
             
         self.highest_prority(self.P)
@@ -104,7 +103,8 @@ class PatientPrioritizer:
 
         for p in patients:
             - self.patient(p)
-            - self.symptom(p, p.symptoms[0])
+            for s in p.symptoms:
+                - self.symptom(p, s)
             - self.disease(p, p.predicted_disease)
 
         return ans
