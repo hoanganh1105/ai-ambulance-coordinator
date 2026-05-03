@@ -51,6 +51,36 @@ class PatientPrioritizer:
         self.exist_higher_priority = self.model("exist_higher_priority")
         self.highest_prority = self.model("highest_prority")    # highest_prority(P) => bệnh nhân P được ưu tiên cao nhất
         
+        # COMPARING TIERS
+        + self.higher_tier(1, 2)
+        + self.higher_tier(2, 3)
+        + self.higher_tier(3, 4)
+        + self.higher_tier(4, 5)
+        self.higher_tier(self.T1, self.T3) <= self.higher_tier(self.T1, self.T2) & self.higher_tier(self.T2, self.T3)
+
+        + self.same_tier(1, 1)
+        + self.same_tier(2, 2)
+        + self.same_tier(3, 3)
+        + self.same_tier(4, 4)
+        + self.same_tier(5, 5)
+
+        # COMPARING SYMPTOMS
+        self.higher_symptom_severity(self.S1, self.S2) <= self.symptom_tier(self.S1, self.T1) & self.symptom_tier(self.S2, self.T2) & self.higher_tier(self.T1, self.T2)
+        self.same_symptom_severity(self.S1, self.S2) <= self.symptom_tier(self.S1, self.T1) & self.symptom_tier(self.S2, self.T2) & self.same_tier(self.T1, self.T2)
+
+        self.exist_higher_symptom_severity(self.P, self.S) <= self.symptom(self.P, self.S) & self.symptom(self.P, self.S0) & self.higher_symptom_severity(self.S0, self.S)
+        self.highest_symptom_severity(self.P, self.S) <= self.symptom(self.P, self.S) & ~self.exist_higher_symptom_severity(self.P, self.S)
+
+        # COMPARING DISEASE
+        self.higher_disease_severity(self.D1, self.D2) <= self.disease_tier(self.D1, self.T1) & self.disease_tier(self.D2, self.T2) & self.higher_tier(self.T1, self.T2)
+
+        # PRIORITIZING PATIENT
+        self.higher_priority(self.P1, self.P2) <= self.highest_symptom_severity(self.P1, self.S1) & self.highest_symptom_severity(self.P2, self.S2) & self.higher_symptom_severity(self.S1, self.S2)
+        self.higher_priority(self.P1, self.P2) <= self.highest_symptom_severity(self.P1, self.S1) & self.highest_symptom_severity(self.P2, self.S2) & self.same_symptom_severity(self.S1, self.S2) & self.disease(self.P1, self.D1) & self.disease(self.P2, self.D2) & self.higher_disease_severity(self.D1, self.D2)
+
+        # TOP PRIORITY LOGIC
+        self.exist_higher_priority(self.P) <= self.patient(self.P) & self.patient(self.P0) & self.higher_priority(self.P0, self.P)
+        self.highest_prority(self.P) <= self.patient(self.P) & ~self.exist_higher_priority(self.P)
 
     @staticmethod
     def create_prioritizer_model(name: str):
