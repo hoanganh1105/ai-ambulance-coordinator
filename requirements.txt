@@ -18,5 +18,5 @@ geopy>=2.3.0
 matplotlib>=3.7.0
 networkx>=3.0.0
 
-# --- Knowledge based system ---
+# --- Knowledge-based system ---
 pyDatalog
