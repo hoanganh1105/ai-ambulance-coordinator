@@ -20,3 +20,6 @@ networkx>=3.0.0
 
 # --- Knowledge-based system ---
 pyDatalog
+
+#  --- Bayesian Network ---
+pgmpy==1.0.0

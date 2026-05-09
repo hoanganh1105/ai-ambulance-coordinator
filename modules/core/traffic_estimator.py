@@ -84,7 +84,7 @@ class TrafficEstimator:
             for p in parents:
                 self.model.add_edge(p, 'traffic_density_level')
             
-            self.model.fit(df, estimator=MaximumLikelihoodEstimator())
+            self.model.fit(df, estimator=MaximumLikelihoodEstimator)
             self.inference = VariableElimination(self.model)
             print("Huấn luyện pgmpyBayesianNetwork hoàn tất!")
 
