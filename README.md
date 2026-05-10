@@ -1,260 +1,139 @@
-# 🚑 AI Ambulance Coordinator
+# AI Ambulance Coordinator — Intelligent Ambulance Dispatch System
 
-AI Ambulance Coordinator is an intelligent emergency response system developed for the **Introduction to Artificial Intelligence (CO2017)** course at **Ho Chi Minh City University of Technology (HCMUT)**.
+The AI system developed as part of the course *Introduction to Artificial Intelligence* assignment.
 
-The system integrates multiple AI techniques to support **medical diagnosis** and **emergency routing optimization** for ambulances.
-
----
-
-# 📚 Course Information
+## 📚 Course Information
 
 | Field           | Information                                       |
 | --------------- | ------------------------------------------------- |
 | **Course Name** | Introduction to Artificial Intelligence           |
 | **Course ID**   | CO2017                                            |
 | **Semester**    | Semester II – Academic Year 2025–2026             |
-| **Instructor**  | Dr. Truong Vinh Lan                               |
+| **Instructor**  | Dr. Trương Vĩnh Lân                               |
 | **University**  | Ho Chi Minh City University of Technology (HCMUT) |
 
----
-
-# 👥 Team Members
+## 👥 Team Members
 
 | Name           | Student ID  | Email      |
 | -------------- | ----------- | ---------- |
-| Your Full Name | Your ID     | Your Email |
-| Member 2 Name  | Member 2 ID |            |
-| Member 3 Name  | Member 3 ID |            |
-| Member 4 Name  | Member 4 ID |            |
+| Huỳnh Hoàng Anh | 2410078 | anh.huynh1105@hcmut.edu.vn |
+| Nguyễn Đăng Khánh | 2311512 | khanh.nguyennttt040905@hcmut.edu.vn |
+| Hồ Đắc Minh Phương | 2312738 | hophuong11052005@gmail.com |
+| Nguyễn Anh Quân | 2412899 | quan.nguyen2412899@hcmut.edu.vn |
 
 ---
 
-# 🎯 Project Objective
+## 📖 Overview
+In emergency medicine, the "golden hour" can determine patient outcomes. This system answers the question: **How to assign a single ambulance when multiple calls arrive simultaneously?** Instead of using strict first-come-first-served, the system combines AI techniques to make informed dispatch decisions:
 
-The **AI Ambulance Coordinator** is designed to improve emergency medical response by automating two critical phases:
-
-## Phase 1 — Medical Diagnosis
-
-A **Machine Learning model (Decision Tree)** analyzes patient symptoms to predict potential diseases.
-A **rule-based system (IF–THEN rules)** then prioritizes emergency cases based on diagnosis severity.
-
-## Phase 2 — Emergency Routing
-
-The system determines the fastest route for ambulances by combining:
-
-* **Bayesian Networks** to estimate traffic congestion probabilities
-* **A* Search Algorithm** to compute optimal navigation paths
-* **Heuristic functions** to guide efficient pathfinding
-
-This integration allows the system to **simulate intelligent decision-making in emergency medical services**.
+- **Forecasting & Diagnosis:** Machine learning models provide preliminary diagnoses and a simple Bayesian network estimates traffic risk.
+- **Triage & Prioritization:** Logic-based inference ranks urgency based on reported symptoms and likely diagnoses.
+- **Route Optimization:** An A* search finds shortest routes on a road graph whose edge weights are updated by traffic estimates.
 
 ---
 
-# 🧠 AI Techniques Used
+## 📊 Datasets and Dependencies
+**Datasets**:
+- **[Disease–Symptom Dataset](https://www.kaggle.com/datasets/dhivyeshrk/diseases-and-symptoms-dataset)** for training the diagnostic classifier.
+- **[Delhi Traffic Patterns Dataset](https://www.kaggle.com/datasets/guriya79/understanding-delhi-traffic-patterns)** for training the traffic forecasting model.
 
-The project integrates **4+ major AI components** required by the course:
+**Main dependencies**:
+- [**kagglehub**](https://github.com/Kaggle/kagglehub) for downloading datasets.
+- **[OSMnx](https://osmnx.readthedocs.io/en/stable/)** for map data (road network) of the target region (default: Delhi, India).
+- [**pyDatalog**](https://sites.google.com/site/pydatalog/home) for implementation of the rule-based `PatientPrioritizer`.
+- [**scikit-learn**](https://scikit-learn.org/stable/) for comparing standard machine learning models with our self-imlemented one.
+- [**pgmpy**](https://pgmpy.org/index.html) for comparing standanrd Bayesian Network model with our self-implemented one.
 
-| AI Component             | Implementation                                      |
-| ------------------------ | --------------------------------------------------- |
-| Representation & Search  | State-space modeling with **A*** search             |
-| Heuristic Function       | **Euclidean Distance** for path optimization        |
-| Knowledge Representation | **IF–THEN rule system** for patient priority        |
-| Probabilistic Reasoning  | **Bayesian Networks** for traffic prediction        |
-| Machine Learning         | **Decision Tree classifier** for disease prediction |
+   All dependencies in detail are listed in `requirements.txt`.
 
 ---
 
-# 📂 Project Structure
+## 🚀 How to run
+The project is designed to run **entirely on Google Colab** without mounting personal cloud storage. Installations are also handled automatically in our notebook.
 
+### Quick start
+Open the [project's notebook on Google colab](https://colab.research.google.com/github/hoanganh1105/ai-ambulance-coordinator/blob/main/notebooks/Main_Pipeline.ipynb) and jump to section **Hệ thống tích hợp**, then:
+1. **Configure environment:** open the main notebook and set parameters (optional):
+   - `time_of_day`: "Morning Peak" / "Afternoon" / "Evening Peak" / "Night"
+   - `day_of_week`: "Weekday" / "Weekend"
+   - `weather_condition`: "Clear" / "Rain" / "Fog" / "Heatwave"
+2. **Run the notebook:** execute all cells (Runtime → Run All).
+3. **Interact with the UI (final cell):**
+   - Step 1: click the ambulance position on the map.
+   - Step 2: click patient locations, enter symptoms, and click **"Thêm bệnh nhân"** for each case.
+   - Step 3: click **"Kết thúc và trả kết quả"** to run the pipeline and display the selected route.
+
+---
+
+## 🗂 Repository layout
 ```
-ai-ambulance-coordinator/
-│
 ├── features/
-│   ├── disease_classes.npy
-│   ├── symptom_features.npy
-│   └── trained_model.joblib
-│
 ├── modules/
-│   ├── data_loader.py
-│   ├── preprocessor.py
-│   ├── ml_model.py
-│   ├── search.py
-│   ├── bayesian_network.py
-│   └── rules_engine.py
-│
-├── notebooks/
+│   ├── core/
+│   │   ├── disease_classifier.py
+│   │   ├── map_router.py
+│   │   ├── patient_prioritizer.py
+│   │   └── traffic_estimator.py
+│   ├── models/
+│   │   ├── simple_bayesian_network.py
+│   │   ├── simple_classifier.py
+│   │   ├── simple_search_algorithm.py
+│   │   └── simple_street_graph.py
+│   └── ui/
+│       └── dispatch_ui.py
+└── notebooks/
 │   └── Main_Pipeline.ipynb
-│
-├── reports/
-│   ├── final_report.pdf
-│   └── eda_visualizations.ipynb
-│
-├── requirements.txt
-└── README.md
+└── reports/
+    └── final_report.pdf
 ```
 
 ### Folder Description
 
-| Folder               | Description                                               |
-| -------------------- | --------------------------------------------------------- |
-| **features/**        | Extracted features, disease labels, and trained ML models |
-| **modules/**         | Core system modules for AI algorithms                     |
-| **notebooks/**       | Google Colab notebooks for testing and integration        |
-| **reports/**         | Final report and analysis visualizations                  |
-| **requirements.txt** | Python dependencies                                       |
+| Folder               | Description                                                    |
+| -------------------- | ---------------------------------------------------------------|
+| **features/**        | Extracted features, disease labels and knowledge base          |
+| **modules/core/**     | Core system modules for AI algorithms                          |
+| **modules/models/**   | Self-implemented algorithms, data structures, and models       |
+| **modules/ui/**       | Support system interaction via a graphic interface on notebook |
+| **notebooks/**       | Google Colab notebooks for testing and integration             |
+| **reports/**         | Project's report                                               |
+
+
+### 📄 Project Deliverables
+
+A [PDF project report](reports/final_report.pdf) (in `report/`) and a [Colab notebook](https://colab.research.google.com/github/hoanganh1105/ai-ambulance-coordinator/blob/main/notebooks/Main_Pipeline.ipynb) (in `notebooks/`) is available.
 
 ---
 
-# ⚙️ Getting Started
+## 🏗 System architecture and Pipeline
 
-The project is designed to run **entirely on Google Colab** without mounting personal cloud storage.
+### Core AI components
+| Component | Source file | Purpose |
+| :--- | :--- | :--- |
+| **Map & Search** | `map_router.py`, `simple_search_algorithm.py` | Manage state-space model (OSMnx-like graph) with **A\*** search. |
+| **Prioritization / Reasoning** | `patient_prioritizer.py` | Use Datalog-style rules to rank patients based on symptoms and predicted disease. |
+| **Traffic Forecasting** | `traffic_estimator.py` | Bayesian network that estimates traffic and updates edge weights. |
+| **Disease Diagnosis** | `disease_classifier.py` | ML model that predicts likely disease from symptoms. |
 
-## Prerequisites
+The listed AI components above function using either internal implementations (in `modules/models`) or external libraries. Additionally, `dispatch_ui.py` is provided to support interaction via graphic interface.
 
-You need a **Kaggle API Token** to automatically download the dataset.
-
-1. Go to Kaggle → Account → Create API Token
-2. Download `kaggle.json`
-
----
-
-# ▶️ Running the System
-
-## Step 1 — Open Google Colab
-
-Open:
-
-```
-notebooks/Main_Pipeline.ipynb
-```
-
----
-
-## Step 2 — Set Kaggle Credentials
-
-```python
-import os
-
-os.environ['KAGGLE_USERNAME'] = "your_username"
-os.environ['KAGGLE_KEY'] = "your_key"
-```
+### Pipeline
+The runtime pipeline contains three main phases:
+1. **Initialization:** load maps, datasets, and populate models/knowledge bases.
+2. **Environment update:** `TrafficEstimator` predicts traffic (by time, weather, road type) and updates graph edge weights.
+3. **Operational flow:**
+   - Receive a list of patients (location + symptoms).
+   - Run the disease classifier to obtain each patient's predicted disease.
+   - Select the highest-priority patients using the reasoning engine.
+   - Compute routes and choose the closest patient among the top-priority group to dispatch the ambulance.
 
 ---
 
-## Step 3 — Clone Repository
-
-```bash
-!git clone https://github.com/your-username/ai-ambulance-coordinator.git
-%cd ai-ambulance-coordinator
-```
-
----
-
-## Step 4 — Run the Pipeline
-
-From the Colab menu:
-
-```
-Runtime → Run All
-```
-
-This will automatically:
-
-1. Download dataset
-2. Preprocess symptom data
-3. Train the Decision Tree model
-4. Perform disease prediction
-5. Compute optimal ambulance routes
-
----
-
-# 🏗 System Architecture
-
-The overall system workflow is shown below:
-
-```
-Patient Symptoms
-       │
-       ▼
-Machine Learning Model
-(Decision Tree)
-       │
-       ▼
-Disease Prediction
-       │
-       ▼
-Rule-Based System
-(IF–THEN)
-       │
-       ▼
-Priority Assignment
-       │
-       ▼
-Traffic Bayesian Network
-       │
-       ▼
-A* Search Algorithm
-       │
-       ▼
-Optimal Ambulance Route
-```
-
----
-
-# 📊 Machine Learning Model
-
-**Algorithm:** Decision Tree Classifier
-
-Dataset characteristics:
-
-| Feature            | Value   |
-| ------------------ | ------- |
-| Number of symptoms | 377     |
-| Number of diseases | 773     |
-| Total samples      | 246,945 |
-| Test split         | 20%     |
-| Model accuracy     | ~81.44% |
-
-Input symptoms are represented as **binary vectors**:
-
-```
-0 → symptom absent  
-1 → symptom present
-```
-
----
-
-# 📄 Project Deliverables
-
-| Deliverable           | Link                          |
-| --------------------- | ----------------------------- |
-| Final Report (PDF)    | reports/final_report.pdf      |
-| Google Colab Notebook | notebooks/Main_Pipeline.ipynb |
-| Source Code           | modules/                      |
-
----
-
-# 🧪 Future Improvements
-
-Potential improvements include:
-
-* Implement **Naive Bayes (BernoulliNB)** for binary symptom data
-* Perform **Hyperparameter Tuning with GridSearchCV**
-* Address **Class Imbalance** using:
-
-  * `class_weight="balanced"`
-  * SMOTE resampling
-* Improve symptom representation to include **severity levels**
-
----
-
-# 📜 License
+## 📜 License
 
 This project is developed **for academic purposes** as part of the
 **CO2017 – Introduction to Artificial Intelligence course at HCMUT**.
 
----
-
-# ⭐ Acknowledgement
+## ⭐ Acknowledgement
 
 Special thanks to **Dr. Truong Vinh Lan** for guidance throughout the course.
